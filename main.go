@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -22,7 +21,9 @@ func main() {
 	http.ListenAndServe(":8080", http.HandlerFunc(handlerFunction))
 }
 
+// getN parses the "n" query param and ensures it is in the range [0, maxN]
 func getN(req *http.Request) (int, error) {
+	const maxN = 64
 	nStr := req.URL.Query().Get("n")
 	if nStr == "" {
 		return 1, nil
@@ -31,8 +32,8 @@ func getN(req *http.Request) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	if qn < 0 || qn > 80 {
-		return 0, errors.New("n must be [0, 80]")
+	if qn < 0 || qn > maxN {
+		return 0, fmt.Errorf("n must be [0, %d]", maxN)
 	}
 	return qn, nil
 }
