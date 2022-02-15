@@ -6,7 +6,8 @@ import (
 	"strconv"
 )
 
-const page = `<html><head><title>Fib(%[1]d)</title></head><body><h1>%[2]d</h1><a href="/?n=%[3]d">Fib(%[3]d)</a></body></html>`
+const page = `<html><head><title>Fib(%[1]d)</title></head><body><h1>Fib(%[1]d) = %[2]d</h1><a href="/?n=%[3]d">Fib(%[3]d)</a></body></html>`
+const maxN = 64
 
 func main() {
 	handlerFunction := func(res http.ResponseWriter, req *http.Request) {
@@ -15,7 +16,7 @@ func main() {
 			http.Error(res, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Fprintf(res, page, n, Fib(n), n+1)
+		fmt.Fprintf(res, page, n, Fib(n), (n+1)%maxN)
 	}
 
 	http.ListenAndServe(":8080", http.HandlerFunc(handlerFunction))
@@ -23,7 +24,6 @@ func main() {
 
 // getN parses the "n" query param and ensures it is in the range [0, maxN]
 func getN(req *http.Request) (int, error) {
-	const maxN = 64
 	nStr := req.URL.Query().Get("n")
 	if nStr == "" {
 		return 1, nil
